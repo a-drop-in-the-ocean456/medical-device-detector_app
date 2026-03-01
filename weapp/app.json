@@ -1,0 +1,26 @@
+{
+  "pages": [
+    "pages/index/index"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#1890ff",
+    "navigationBarTitleText": "医疗设备识别",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#f5f5f5"
+  },
+  "permission": {
+    "scope.camera": {
+      "desc": "用于拍摄医疗设备照片进行识别"
+    }
+  },
+  "requiredBackgroundModes": [],
+  "networkTimeout": {
+    "request": 30000,
+    "uploadFile": 60000,
+    "downloadFile": 60000
+  },
+  "debug": false,
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents"
+}

@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>医疗设备识别</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+            padding-bottom: 40px;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px 15px;
+        }
+        
+        /* 头部 */
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 15px 0;
+        }
+        
+        .header-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1890ff;
+            margin-bottom: 8px;
+        }
+        
+        .header-subtitle {
+            font-size: 14px;
+            color: #999;
+        }
+        
+        /* 卡片 */
+        .card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        
+        /* 提示框 */
+        .tip-box {
+            background: #e6f7ff;
+            border: 1px solid #91d5ff;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 16px;
+        }
+        
+        .tip-text {
+            font-size: 14px;
+            color: #096dd9;
+            line-height: 1.5;
+        }
+        
+        /* 支持的设备 */
+        .section-title {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 12px;
+        }
+        
+        .device-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .tag {
+            background: #f0f0f0;
+            color: #666;
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+        }
+        
+        .tag-primary {
+            background: #e6f7ff;
+            color: #1890ff;
+        }
+        
+        /* 上传区域 */
+        .upload-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+            border-radius: 12px;
+            border: 2px dashed #c0c4cc;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .upload-area:hover {
+            background: linear-gradient(135deg, #e6f7ff 0%, #bae7ff 100%);
+            border-color: #1890ff;
+        }
+        
+        .upload-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+        
+        .upload-text {
+            font-size: 16px;
+            color: #333;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+        
+        .upload-hint {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        /* 图片预览 */
+        .image-preview {
+            position: relative;
+        }
+        
+        .preview-image {
+            width: 100%;
+            max-height: 400px;
+            object-fit: contain;
+            border-radius: 8px;
+            background: #f0f0f0;
+        }
+        
+        /* 加载遮罩 */
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.9);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+        }
+        
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #1890ff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .loading-text {
+            margin-top: 12px;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        /* 按钮 */
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 12px 24px;
+            border-radius: 24px;
+            font-size: 15px;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(24, 144, 255, 0.3);
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #40a9ff 0%, #1890ff 100%);
+        }
+        
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+        
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+        
+        /* 错误提示 */
+        .error-box {
+            background: #fff2f0;
+            border: 1px solid #ffccc7;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .error-icon {
+            font-size: 20px;
+            margin-right: 12px;
+        }
+        
+        .error-text {
+            flex: 1;
+            font-size: 14px;
+            color: #ff4d4f;
+        }
+        
+        /* 结果区域 */
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #e8e8e8;
+        }
+        
+        .result-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+        
+        .result-count {
+            font-size: 12px;
+            color: #1890ff;
+            background: #e6f7ff;
+            padding: 4px 12px;
+            border-radius: 12px;
+        }
+        
+        .result-image-container {
+            margin-bottom: 16px;
+        }
+        
+        .result-image-title {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        
+        .result-image {
+            width: 100%;
+            border-radius: 8px;
+            background: #f0f0f0;
+        }
+        
+        /* 检测列表 */
+        .detection-list {
+            margin-bottom: 16px;
+        }
+        
+        .list-title {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 12px;
+        }
+        
+        .detection-item {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 8px;
+            border-left: 4px solid #1890ff;
+        }
+        
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .item-class {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1a1a1a;
+            text-transform: capitalize;
+        }
+        
+        .item-confidence {
+            font-size: 12px;
+            color: #1890ff;
+            background: #e6f7ff;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+        
+        .item-bbox {
+            font-size: 12px;
+            color: #999;
+            font-family: monospace;
+        }
+        
+        /* 描述区域 */
+        .description-section {
+            background: #f6ffed;
+            border-radius: 8px;
+            padding: 16px;
+            border: 1px solid #b7eb8f;
+        }
+        
+        .description-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .description-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #389e0d;
+        }
+        
+        .copy-btn {
+            background: #52c41a;
+            color: #fff;
+            font-size: 12px;
+            padding: 6px 16px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .copy-btn:hover {
+            background: #73d13d;
+        }
+        
+        .description-text {
+            font-size: 14px;
+            color: #333;
+            line-height: 1.8;
+            white-space: pre-wrap;
+        }
+        
+        /* 无结果 */
+        .no-result {
+            text-align: center;
+            padding: 40px 20px;
+        }
+        
+        .no-result-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+        
+        .no-result-text {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        
+        .no-result-hint {
+            font-size: 14px;
+            color: #999;
+            line-height: 1.8;
+        }
+        
+        /* 设置区域 */
+        .settings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            padding: 8px 0;
+        }
+        
+        .settings-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .settings-toggle {
+            font-size: 13px;
+            color: #1890ff;
+        }
+        
+        .settings-content {
+            padding-top: 16px;
+            border-top: 1px solid #e8e8e8;
+            margin-top: 8px;
+        }
+        
+        .input-group {
+            margin-bottom: 12px;
+        }
+        
+        .input-label {
+            display: block;
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        
+        .input-field {
+            width: 100%;
+            height: 44px;
+            padding: 0 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        
+        .input-field:focus {
+            outline: none;
+            border-color: #1890ff;
+        }
+        
+        .settings-tip {
+            margin: 12px 0;
+        }
+        
+        .tip-link {
+            font-size: 13px;
+            color: #1890ff;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+        
+        /* 底部 */
+        .footer {
+            text-align: center;
+            padding: 30px 0;
+        }
+        
+        .footer-text {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 4px;
+        }
+        
+        .footer-hint {
+            font-size: 11px;
+            color: #bbb;
+        }
+        
+        /* 隐藏文件输入 */
+        #fileInput {
+            display: none;
+        }
+        
+        /* 相机按钮 */
+        .camera-btn {
+            background: linear-gradient(135deg, #52c41a 0%, #389e0d 100%);
+            color: #fff;
+            margin-top: 12px;
+        }
+        
+        .camera-btn:hover {
+            background: linear-gradient(135deg, #73d13d 0%, #52c41a 100%);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 头部 -->
+        <div class="header">
+            <div class="header-title">🏥 医疗设备识别</div>
+            <div class="header-subtitle">基于YOLOv8智能识别技术</div>
+        </div>
+
+        <!-- 提示 -->
+        <div class="tip-box" id="tipBox">
+            <div class="tip-text">📸 提示：拍摄或上传医疗设备照片，系统将自动识别设备类型并提供详细说明</div>
+        </div>
+
+        <!-- 支持的设备 -->
+        <div class="card" id="supportedDevices">
+            <div class="section-title">支持识别的设备类型：</div>
+            <div class="device-tags">
+                <span class="tag tag-primary">药瓶/试剂瓶</span>
+                <span class="tag tag-primary">医用剪刀</span>
+                <span class="tag tag-primary">医疗设备键盘</span>
+                <span class="tag tag-primary">医疗显示器</span>
+                <span class="tag">医疗计时器</span>
+                <span class="tag">医疗设备遥控器</span>
+                <span class="tag">医疗电脑</span>
+                <span class="tag">医疗手册/病历</span>
+            </div>
+        </div>
+
+        <!-- 图片上传 -->
+        <div class="card">
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">📷</div>
+                <div class="upload-text">点击选择图片</div>
+                <div class="upload-hint">支持拍照或从相册选择</div>
+            </div>
+            
+            <div class="image-preview" id="imagePreview" style="display: none;">
+                <img class="preview-image" id="previewImage" src="" alt="预览">
+                <div class="loading-overlay" id="loadingOverlay" style="display: none;">
+                    <div class="loading-spinner"></div>
+                    <div class="loading-text">正在识别中...</div>
+                </div>
+                <div class="btn-group" id="imageActions" style="display: none;">
+                    <button class="btn btn-secondary" onclick="resetImage()">重新选择</button>
+                    <button class="btn btn-primary" onclick="chooseImage()">更换图片</button>
+                </div>
+            </div>
+            
+            <input type="file" id="fileInput" accept="image/*" capture="environment">
+        </div>
+
+        <!-- 错误提示 -->
+        <div class="error-box" id="errorBox" style="display: none;">
+            <span class="error-icon">⚠️</span>
+            <span class="error-text" id="errorText"></span>
+        </div>
+
+        <!-- 检测结果 -->
+        <div class="card" id="resultSection" style="display: none;">
+            <div class="result-header">
+                <span class="result-title">🔍 识别结果</span>
+                <span class="result-count" id="resultCount"></span>
+            </div>
+
+            <div class="result-image-container" id="resultImageContainer" style="display: none;">
+                <div class="result-image-title">检测结果可视化：</div>
+                <img class="result-image" id="resultImage" src="" alt="检测结果">
+            </div>
+
+            <div class="detection-list" id="detectionList" style="display: none;">
+                <div class="list-title">📋 检测详情</div>
+                <div id="detectionItems"></div>
+            </div>
+
+            <div class="description-section" id="descriptionSection" style="display: none;">
+                <div class="description-header">
+                    <span class="description-title">📝 详细说明</span>
+                    <button class="copy-btn" onclick="copyResult()">复制</button>
+                </div>
+                <div class="description-text" id="descriptionText"></div>
+            </div>
+
+            <div class="no-result" id="noResult" style="display: none;">
+                <div class="no-result-icon">🔍</div>
+                <div class="no-result-text">未检测到明显的医疗设备</div>
+                <div class="no-result-hint">
+                    建议：<br>
+                    1. 调整拍摄角度<br>
+                    2. 确保光线充足<br>
+                    3. 将设备置于画面中央
+                </div>
+            </div>
+        </div>
+
+        <!-- 服务器设置 -->
+        <div class="card">
+            <div class="settings-header" onclick="toggleSettings()">
+                <span class="settings-title">⚙️ 服务器设置</span>
+                <span class="settings-toggle" id="settingsToggle">展开 ▼</span>
+            </div>
+            <div class="settings-content" id="settingsContent" style="display: none;">
+                <div class="input-group">
+                    <label class="input-label">服务器地址：</label>
+                    <input type="text" class="input-field" id="serverUrl" placeholder="http://192.168.x.x:5000" value="http://192.168.16.102:5000">
+                </div>
+                <div class="settings-tip">
+                    <span class="tip-link" onclick="showIpTip()">如何获取服务器地址？</span>
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="saveSettings()">保存设置</button>
+                    <button class="btn btn-secondary" onclick="testConnection()">测试连接</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 底部 -->
+        <div class="footer">
+            <div class="footer-text">Powered by YOLOv8</div>
+            <div class="footer-hint">确保手机与服务器在同一网络</div>
+        </div>
+    </div>
+
+    <script>
+        // 全局状态
+        let currentImage = null;
+        let serverUrl = localStorage.getItem('serverUrl') || 'http://192.168.16.102:5000';
+        
+        // 初始化
+        document.getElementById('serverUrl').value = serverUrl;
+        
+        // 上传区域点击事件
+        document.getElementById('uploadArea').addEventListener('click', chooseImage);
+        
+        // 文件选择事件
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                handleFile(file);
+            }
+        });
+
+        // 选择图片
+        function chooseImage() {
+            document.getElementById('fileInput').click();
+        }
+
+        // 处理文件
+        function handleFile(file) {
+            if (!file.type.startsWith('image/')) {
+                showError('请选择图片文件');
+                return;
+            }
+
+            currentImage = file;
+            
+            // 显示预览
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('previewImage').src = e.target.result;
+                document.getElementById('uploadArea').style.display = 'none';
+                document.getElementById('imagePreview').style.display = 'block';
+                document.getElementById('imageActions').style.display = 'flex';
+                document.getElementById('tipBox').style.display = 'none';
+                document.getElementById('supportedDevices').style.display = 'none';
+                
+                // 开始识别
+                detectImage(file);
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // 识别图片
+        async function detectImage(file) {
+            document.getElementById('loadingOverlay').style.display = 'flex';
+            document.getElementById('errorBox').style.display = 'none';
+            document.getElementById('resultSection').style.display = 'none';
+
+            const formData = new FormData();
+            formData.append('image', file);
+
+            try {
+                const response = await fetch(`${serverUrl}/api/detect`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error(`服务器错误 (${response.status})`);
+                }
+
+                const data = await response.json();
+                handleDetectionResult(data);
+            } catch (error) {
+                console.error('识别失败:', error);
+                showError('识别失败: ' + error.message);
+                document.getElementById('loadingOverlay').style.display = 'none';
+            }
+        }
+
+        // 处理检测结果
+        function handleDetectionResult(data) {
+            document.getElementById('loadingOverlay').style.display = 'none';
+            document.getElementById('resultSection').style.display = 'block';
+
+            if (data.success) {
+                const detections = data.detections || [];
+                const count = data.detection_count || 0;
+
+                // 更新计数
+                document.getElementById('resultCount').textContent = count > 0 ? `检测到 ${count} 个物体` : '检测到0个物体';
+
+                // 显示结果图片
+                if (data.image_base64) {
+                    document.getElementById('resultImage').src = data.image_base64;
+                    document.getElementById('resultImageContainer').style.display = 'block';
+                } else {
+                    document.getElementById('resultImageContainer').style.display = 'none';
+                }
+
+                // 显示检测列表
+                if (detections.length > 0) {
+                    const itemsHtml = detections.map((det, index) => `
+                        <div class="detection-item">
+                            <div class="item-header">
+                                <span class="item-class">${det.class}</span>
+                                <span class="item-confidence">${(det.confidence * 100).toFixed(1)}%</span>
+                            </div>
+                            <div class="item-bbox">位置: [${det.bbox.join(', ')}]</div>
+                        </div>
+                    `).join('');
+                    document.getElementById('detectionItems').innerHTML = itemsHtml;
+                    document.getElementById('detectionList').style.display = 'block';
+                } else {
+                    document.getElementById('detectionList').style.display = 'none';
+                }
+
+                // 显示描述
+                if (data.description) {
+                    document.getElementById('descriptionText').textContent = data.description;
+                    document.getElementById('descriptionSection').style.display = 'block';
+                } else {
+                    document.getElementById('descriptionSection').style.display = 'none';
+                }
+
+                // 显示无结果提示
+                if (count === 0) {
+                    document.getElementById('noResult').style.display = 'block';
+                    document.getElementById('resultImageContainer').style.display = 'none';
+                    document.getElementById('detectionList').style.display = 'none';
+                    document.getElementById('descriptionSection').style.display = 'none';
+                } else {
+                    document.getElementById('noResult').style.display = 'none';
+                }
+            } else {
+                showError(data.error || '识别失败');
+            }
+        }
+
+        // 重置图片
+        function resetImage() {
+            currentImage = null;
+            document.getElementById('uploadArea').style.display = 'flex';
+            document.getElementById('imagePreview').style.display = 'none';
+            document.getElementById('resultSection').style.display = 'none';
+            document.getElementById('tipBox').style.display = 'block';
+            document.getElementById('supportedDevices').style.display = 'block';
+            document.getElementById('fileInput').value = '';
+        }
+
+        // 显示错误
+        function showError(message) {
+            document.getElementById('errorText').textContent = message;
+            document.getElementById('errorBox').style.display = 'flex';
+        }
+
+        // 切换设置
+        function toggleSettings() {
+            const content = document.getElementById('settingsContent');
+            const toggle = document.getElementById('settingsToggle');
+            if (content.style.display === 'none') {
+                content.style.display = 'block';
+                toggle.textContent = '收起 ▲';
+            } else {
+                content.style.display = 'none';
+                toggle.textContent = '展开 ▼';
+            }
+        }
+
+        // 保存设置
+        function saveSettings() {
+            const url = document.getElementById('serverUrl').value.trim();
+            if (!url) {
+                alert('请输入服务器地址');
+                return;
+            }
+            if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                alert('地址需以http://或https://开头');
+                return;
+            }
+            serverUrl = url;
+            localStorage.setItem('serverUrl', serverUrl);
+            alert('设置已保存');
+            testConnection();
+        }
+
+        // 测试连接
+        async function testConnection() {
+            try {
+                const response = await fetch(`${serverUrl}/api/health`, {
+                    method: 'GET',
+                    signal: AbortSignal.timeout(5000)
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.status === 'healthy') {
+                        alert('服务器连接成功！');
+                    } else {
+                        alert('服务器响应异常');
+                    }
+                } else {
+                    alert('服务器连接失败');
+                }
+            } catch (error) {
+                alert('无法连接到服务器，请检查地址是否正确');
+            }
+        }
+
+        // 复制结果
+        function copyResult() {
+            const text = document.getElementById('descriptionText').textContent;
+            if (!text) {
+                alert('没有可复制的检测结果');
+                return;
+            }
+            navigator.clipboard.writeText(text).then(() => {
+                alert('已复制到剪贴板');
+            }).catch(() => {
+                alert('复制失败，请手动复制');
+            });
+        }
+
+        // 显示IP提示
+        function showIpTip() {
+            alert('如何获取服务器地址：\n\n1. 确保手机和电脑在同一WiFi下\n2. 在电脑上打开命令提示符\n3. 输入 ipconfig 查看IPv4地址\n4. 格式: http://192.168.x.x:5000');
+        }
+    </script>
+</body>
+</html>

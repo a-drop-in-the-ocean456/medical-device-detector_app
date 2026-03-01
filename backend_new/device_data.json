@@ -1,0 +1,92 @@
+[
+  {
+    "id": 1,
+    "name": "血压计",
+    "name_en": "Blood Pressure Monitor",
+    "category": "diagnostic",
+    "description": "用于测量人体血压的医疗设备，主要包括水银血压计、电子血压计等类型。",
+    "common_uses": "高血压患者日常监测、体检、临床诊断",
+    "features": ["无创测量", "数字显示", "记忆功能", "心律不齐检测"]
+  },
+  {
+    "id": 2,
+    "name": "血糖仪",
+    "name_en": "Blood Glucose Meter",
+    "category": "diagnostic",
+    "description": "用于快速测量血液中葡萄糖浓度的便携式医疗设备，糖尿病患者常用。",
+    "common_uses": "糖尿病患者血糖监测、血糖筛查",
+    "features": ["微量采血", "5秒出结果", "数据存储", "餐前餐后标记"]
+  },
+  {
+    "id": 3,
+    "name": "体温计",
+    "name_en": "Thermometer",
+    "category": "diagnostic",
+    "description": "用于测量人体体温的医疗设备，包括水银体温计、电子体温计、红外体温计等。",
+    "common_uses": "发热筛查、日常体温监测、临床诊断",
+    "features": ["快速测量", "精度高", "记忆功能", "发烧预警"]
+  },
+  {
+    "id": 4,
+    "name": "血氧仪",
+    "name_en": "Pulse Oximeter",
+    "category": "diagnostic",
+    "description": "用于无创测量血氧饱和度和脉率的医疗设备，小巧便携。",
+    "common_uses": "呼吸疾病监测、高原反应检测、睡眠监测",
+    "features": ["无创检测", "LED显示", "便携设计", "低电量提示"]
+  },
+  {
+    "id": 5,
+    "name": "心电图机",
+    "name_en": "ECG Machine",
+    "category": "diagnostic",
+    "description": "用于记录心脏电活动曲线的医疗设备，是心血管疾病诊断的重要工具。",
+    "common_uses": "心律不齐检测、心肌梗死诊断、健康体检",
+    "features": ["多导联记录", "自动分析", "数据存储", "便携式设计"]
+  },
+  {
+    "id": 6,
+    "name": "听诊器",
+    "name_en": "Stethoscope",
+    "category": "diagnostic",
+    "description": "用于听取体内声音的医疗器具，可听取心音、呼吸音、肠鸣音等。",
+    "common_uses": "心肺听诊、血压测量、体格检查",
+    "features": ["高灵敏度", "舒适耳塞", "可调节", "多功能"]
+  },
+  {
+    "id": 7,
+    "name": "注射器",
+    "name_en": "Syringe",
+    "category": "treatment",
+    "description": "用于注射药物或抽取体液的医疗器械，由针筒、活塞和针头组成。",
+    "common_uses": "药物注射、疫苗接种、血液抽取",
+    "features": ["无菌包装", "刻度清晰", "滑动顺畅", "一次性使用"]
+  },
+  {
+    "id": 8,
+    "name": "输液泵",
+    "name_en": "Infusion Pump",
+    "category": "treatment",
+    "description": "用于精确控制输液速度和剂量的医疗设备，常用于静脉输液治疗。",
+    "common_uses": "精准输液、化疗给药、营养支持",
+    "features": ["精确控制", "报警系统", "多种模式", "数据记录"]
+  },
+  {
+    "id": 9,
+    "name": "雾化器",
+    "name_en": "Nebulizer",
+    "category": "treatment",
+    "description": "将药液转化为雾状颗粒的医疗设备，用于治疗呼吸道疾病。",
+    "common_uses": "哮喘治疗、支气管炎、上呼吸道感染",
+    "features": ["雾化细腻", "静音设计", "便携易用", "高效吸收"]
+  },
+  {
+    "id": 10,
+    "name": "制氧机",
+    "name_en": "Oxygen Concentrator",
+    "category": "treatment",
+    "description": "从空气中提取氧气的医疗设备，为需要氧疗的患者提供氧气。",
+    "common_uses": "慢性呼吸系统疾病、高原缺氧、家庭氧疗",
+    "features": ["持续供氧", "流量可调", "低噪音", "智能监控"]
+  }
+]

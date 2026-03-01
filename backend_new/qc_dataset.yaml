@@ -1,0 +1,14 @@
+# Ultralytics YOLO dataset config for this project.
+# This file is placed in ultralytics-main/, while split_dataset/ is its sibling directory.
+
+path: ../split_dataset
+train: images/train
+val: images/test
+test: images/test
+
+names:
+  0: syringe
+  1: Needle holder
+  2: waste
+  3: large gauze
+  4: Iodophor

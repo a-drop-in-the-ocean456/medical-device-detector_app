@@ -1,0 +1,155 @@
+<!--pages/index/index.wxml-->
+<view class="container">
+  
+  <!-- 页面标题 -->
+  <view class="header">
+    <text class="header-title">🏥 医疗设备识别</text>
+    <text class="header-subtitle">基于YOLOv8智能识别技术</text>
+  </view>
+
+  <!-- 使用提示 -->
+  <view class="tip-box" wx:if="{{!imageSrc}}">
+    <text class="tip-text">📸 提示：拍摄或上传医疗设备照片，系统将自动识别设备类型并提供详细说明</text>
+  </view>
+
+  <!-- 支持的设备类型 -->
+  <view class="supported-devices" wx:if="{{!imageSrc}}">
+    <text class="section-title">支持识别的设备类型：</text>
+    <view class="device-tags">
+      <text class="tag tag-primary" wx:for="{{supportedDevices}}" wx:key="index">{{item}}</text>
+    </view>
+  </view>
+
+  <!-- 图片选择和展示区域 -->
+  <view class="image-section card">
+    <!-- 未选择图片时显示上传按钮 -->
+    <view class="upload-area" wx:if="{{!imageSrc}}" bindtap="chooseImage">
+      <view class="upload-icon">📷</view>
+      <text class="upload-text">点击选择图片</text>
+      <text class="upload-hint">支持拍照或从相册选择</text>
+    </view>
+
+    <!-- 已选择图片时显示图片 -->
+    <view class="image-preview" wx:if="{{imageSrc}}">
+      <image 
+        src="{{imageSrc}}" 
+        mode="aspectFit" 
+        class="preview-image"
+        bindtap="previewOriginalImage"
+      />
+      
+      <!-- 加载状态 -->
+      <view class="loading-overlay" wx:if="{{isLoading}}">
+        <view class="loading-spinner"></view>
+        <text class="loading-text">正在识别中...</text>
+      </view>
+
+      <!-- 重新选择按钮 -->
+      <view class="image-actions" wx:if="{{!isLoading}}">
+        <button class="btn-secondary" bindtap="resetImage">重新选择</button>
+        <button class="btn-primary" bindtap="chooseImage">更换图片</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 错误提示 -->
+  <view class="error-box" wx:if="{{errorMsg}}">
+    <text class="error-icon">⚠️</text>
+    <text class="error-text">{{errorMsg}}</text>
+  </view>
+
+  <!-- 检测结果展示 -->
+  <view class="result-section card" wx:if="{{hasResult}}">
+    <view class="result-header">
+      <text class="result-title">🔍 识别结果</text>
+      <text class="result-count" wx:if="{{detectionCount > 0}}">检测到 {{detectionCount}} 个物体</text>
+    </view>
+
+    <!-- 结果图片 -->
+    <view class="result-image-container" wx:if="{{resultImage}}">
+      <text class="result-image-title">检测结果可视化：</text>
+      <image 
+        src="{{resultImage}}" 
+        mode="widthFix" 
+        class="result-image"
+        bindtap="previewResultImage"
+      />
+    </view>
+
+    <!-- 检测详情列表 -->
+    <view class="detection-list" wx:if="{{detections.length > 0}}">
+      <text class="list-title">📋 检测详情</text>
+      <view class="detection-item" wx:for="{{detections}}" wx:key="index">
+        <view class="item-header">
+          <text class="item-class">{{item.class}}</text>
+          <text class="item-confidence">{{item.confidence * 100}}%</text>
+        </view>
+        <view class="item-bbox">
+          <text class="bbox-label">位置:</text>
+          <text wx:if="{{item.bbox && item.bbox.length > 0}}" class="bbox-value">[{{item.bbox[0]}}, {{item.bbox[1]}}, {{item.bbox[2]}}, {{item.bbox[3]}}]</text>
+          <text wx:else class="bbox-value">无坐标</text>
+        </view>
+        <!-- 调试信息 -->
+        <!-- <view style="font-size: 20rpx; color: #999; margin-top: 10rpx;">
+          <text>bbox类型: {{item.bbox.constructor.name}}, 长度: {{item.bbox.length}}</text>
+        </view> -->
+      </view>
+    </view>
+
+    <!-- 描述信息 -->
+    <view class="description-section" wx:if="{{description}}">
+      <view class="description-header">
+        <text class="description-title">📝 详细说明</text>
+        <button class="copy-btn" bindtap="copyResult">复制</button>
+      </view>
+      <text class="description-text" user-select>{{description}}</text>
+    </view>
+
+    <!-- 无结果提示 -->
+    <view class="no-result" wx:if="{{detectionCount === 0}}">
+      <text class="no-result-icon">🔍</text>
+      <text class="no-result-text">未检测到明显的医疗设备</text>
+      <text class="no-result-hint">建议：
+1. 调整拍摄角度
+2. 确保光线充足
+3. 将设备置于画面中央</text>
+    </view>
+  </view>
+
+  <!-- 服务器设置 -->
+  <view class="settings-section card">
+    <view class="settings-header" bindtap="toggleSettings">
+      <text class="settings-title">⚙️ 服务器设置</text>
+      <text class="settings-toggle">{{showSettings ? '收起 ▲' : '展开 ▼'}}</text>
+    </view>
+    
+    <view class="settings-content" wx:if="{{showSettings}}">
+      <view class="input-group">
+        <text class="input-label">服务器地址：</text>
+        <input 
+          class="input-field" 
+          type="text" 
+          placeholder="http://192.168.x.x:5000"
+          value="{{serverUrl}}"
+          bindinput="onServerUrlInput"
+        />
+      </view>
+      
+      <view class="settings-tip">
+        <text class="tip-link" bindtap="showLocalIpTip">如何获取服务器地址？</text>
+      </view>
+      
+      <view class="settings-actions">
+        <button class="btn-primary" bindtap="saveSettings">保存设置</button>
+        <button class="btn-secondary" bindtap="testConnection">测试连接</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部信息 -->
+  <view class="footer">
+    <text class="footer-text">Powered by YOLOv8</text>
+    <text class="footer-hint">确保手机与服务器在同一网络</text>
+  </view>
+
+</view>

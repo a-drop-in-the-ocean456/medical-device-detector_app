@@ -1,0 +1,312 @@
+/**app.wxss - 全局样式**/
+
+/* 重置样式 */
+page {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #333;
+  background-color: #f5f5f5;
+  height: 100%;
+}
+
+/* 通用容器 */
+.container {
+  padding: 20rpx;
+  box-sizing: border-box;
+}
+
+/* 卡片样式 */
+.card {
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.08);
+}
+
+/* 主按钮样式 */
+.btn-primary {
+  background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
+  color: #fff;
+  border-radius: 44rpx;
+  font-size: 32rpx;
+  font-weight: 500;
+  height: 88rpx;
+  line-height: 88rpx;
+  text-align: center;
+  border: none;
+  box-shadow: 0 4rpx 16rpx rgba(24, 144, 255, 0.3);
+  transition: all 0.3s ease;
+}
+
+.btn-primary:active {
+  transform: scale(0.98);
+  box-shadow: 0 2rpx 8rpx rgba(24, 144, 255, 0.3);
+}
+
+.btn-primary::after {
+  border: none;
+}
+
+/* 次要按钮 */
+.btn-secondary {
+  background: #f0f0f0;
+  color: #333;
+  border-radius: 44rpx;
+  font-size: 28rpx;
+  height: 72rpx;
+  line-height: 72rpx;
+  text-align: center;
+  border: none;
+}
+
+.btn-secondary::after {
+  border: none;
+}
+
+/* 危险按钮 */
+.btn-danger {
+  background: #ff4d4f;
+  color: #fff;
+  border-radius: 44rpx;
+  font-size: 28rpx;
+  height: 72rpx;
+  line-height: 72rpx;
+  text-align: center;
+  border: none;
+}
+
+.btn-danger::after {
+  border: none;
+}
+
+/* 标题样式 */
+.title {
+  font-size: 36rpx;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 20rpx;
+}
+
+.subtitle {
+  font-size: 28rpx;
+  color: #666;
+  margin-bottom: 16rpx;
+}
+
+/* 文本样式 */
+.text-primary {
+  color: #1890ff;
+}
+
+.text-success {
+  color: #52c41a;
+}
+
+.text-warning {
+  color: #faad14;
+}
+
+.text-danger {
+  color: #ff4d4f;
+}
+
+.text-muted {
+  color: #999;
+}
+
+/* 分割线 */
+.divider {
+  height: 1rpx;
+  background: #e8e8e8;
+  margin: 20rpx 0;
+}
+
+/* 加载动画 */
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40rpx;
+}
+
+.loading-spinner {
+  width: 40rpx;
+  height: 40rpx;
+  border: 4rpx solid #f3f3f3;
+  border-top: 4rpx solid #1890ff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* 空状态 */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80rpx 40rpx;
+  color: #999;
+}
+
+.empty-icon {
+  width: 160rpx;
+  height: 160rpx;
+  margin-bottom: 20rpx;
+  opacity: 0.5;
+}
+
+.empty-text {
+  font-size: 28rpx;
+  color: #999;
+}
+
+/* 图片容器 */
+.image-container {
+  width: 100%;
+  border-radius: 12rpx;
+  overflow: hidden;
+  background: #f0f0f0;
+}
+
+.image-container image {
+  width: 100%;
+  display: block;
+}
+
+/* 标签样式 */
+.tag {
+  display: inline-block;
+  padding: 8rpx 16rpx;
+  border-radius: 8rpx;
+  font-size: 24rpx;
+  margin-right: 12rpx;
+  margin-bottom: 12rpx;
+}
+
+.tag-primary {
+  background: #e6f7ff;
+  color: #1890ff;
+}
+
+.tag-success {
+  background: #f6ffed;
+  color: #52c41a;
+}
+
+.tag-warning {
+  background: #fffbe6;
+  color: #faad14;
+}
+
+/* 结果展示区域 */
+.result-section {
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  margin-top: 20rpx;
+}
+
+.result-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 20rpx;
+  display: flex;
+  align-items: center;
+}
+
+.result-title::before {
+  content: '';
+  width: 8rpx;
+  height: 32rpx;
+  background: #1890ff;
+  border-radius: 4rpx;
+  margin-right: 16rpx;
+}
+
+/* 检测结果项 */
+.detection-item {
+  padding: 20rpx;
+  background: #f8f9fa;
+  border-radius: 12rpx;
+  margin-bottom: 16rpx;
+  border-left: 6rpx solid #1890ff;
+}
+
+.detection-class {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 8rpx;
+}
+
+.detection-confidence {
+  font-size: 24rpx;
+  color: #1890ff;
+  margin-bottom: 8rpx;
+}
+
+.detection-desc {
+  font-size: 26rpx;
+  color: #666;
+  line-height: 1.6;
+}
+
+/* 操作按钮组 */
+.action-group {
+  display: flex;
+  gap: 20rpx;
+  margin-top: 30rpx;
+}
+
+.action-group button {
+  flex: 1;
+}
+
+/* 提示信息 */
+.tip-box {
+  background: #e6f7ff;
+  border: 1rpx solid #91d5ff;
+  border-radius: 12rpx;
+  padding: 20rpx;
+  margin-bottom: 20rpx;
+}
+
+.tip-text {
+  font-size: 26rpx;
+  color: #096dd9;
+  line-height: 1.6;
+}
+
+/* 设置输入框 */
+.input-group {
+  margin-bottom: 20rpx;
+}
+
+.input-label {
+  font-size: 28rpx;
+  color: #666;
+  margin-bottom: 12rpx;
+  display: block;
+}
+
+.input-field {
+  width: 100%;
+  height: 80rpx;
+  padding: 0 20rpx;
+  border: 1rpx solid #d9d9d9;
+  border-radius: 8rpx;
+  font-size: 28rpx;
+  box-sizing: border-box;
+}
+
+.input-field:focus {
+  border-color: #1890ff;
+}
