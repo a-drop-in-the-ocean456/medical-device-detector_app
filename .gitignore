@@ -54,3 +54,14 @@ ultralytics-main/README.zh-CN.md
 
 # Temporary files
 *.tmp
+
+# DOCX files (documentation - do not commit)
+*.docx
+medical-device-detector-core-code.docx
+烟草专卖零售许可（微信）申办系统V1.0_源代码.docx
+
+# Python scripts
+generate_doc.py
+
+# 标注工具 dataset（训练数据 - 较大，不提交）
+标注工具/dataset/
