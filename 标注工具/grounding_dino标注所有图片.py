@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any, Dict, List
 
 import cv2
+import numpy as np
 
 try:
     from tqdm import tqdm
@@ -302,7 +303,12 @@ def process_dataset(args: argparse.Namespace) -> None:
             )
             continue
 
-        frame = cv2.imread(str(image_path), cv2.IMREAD_COLOR)
+        try:
+            with open(image_path, "rb") as f:
+                data = f.read()
+            frame = cv2.imdecode(np.frombuffer(data, dtype=np.uint8), cv2.IMREAD_COLOR)
+        except Exception:
+            frame = None
         if frame is None:
             unreadable_images.append(str(image_path))
             write_meta_file(
@@ -415,7 +421,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--input-root",
-        default="/home/liang/grass_data_fixed/train_dataset",
+        default="D:/微信小程序开发/medical-device-detector_app/标注工具/dataset_new/collected_images",
         help="Root folder to scan recursively for images.",
     )
     parser.add_argument(
@@ -425,7 +431,8 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--classes",
-        default="fallen leaf, fallen leaves, stone, obstacle",
+        # default="fallen leaf, fallen leaves, stone, obstacle",
+        default="medical device",
         help="Comma-separated prompt classes for Grounding DINO.",
     )
     parser.add_argument("--model-id", default="IDEA-Research/grounding-dino-base")

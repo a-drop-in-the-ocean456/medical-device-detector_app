@@ -1,10 +1,13 @@
 # Ultralytics YOLO dataset config for this project.
 # This file is placed in ultralytics-main/, while split_dataset/ is its sibling directory.
 
-path: ../split_dataset
-train: images/train
-val: images/test
-test: images/test
+path: D:/微信小程序开发/medical-device-detector_app/标注工具
+train:
+  - dataset/all/split_dataset/images/train
+  - dataset/all/split_dataset/images/test
+  - dataset_new/annotated_videos/images
+val: dataset/all/split_dataset/images/test
+test: dataset/all/split_dataset/images/test
 
 names:
   0: syringe
@@ -12,3 +15,5 @@ names:
   2: waste
   3: large gauze
   4: Iodophor
+
+

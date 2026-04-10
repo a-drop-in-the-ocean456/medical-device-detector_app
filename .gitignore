@@ -65,3 +65,5 @@ generate_doc.py
 
 # 标注工具 dataset（训练数据 - 较大，不提交）
 标注工具/dataset/
+标注工具/dataset_new/
+标注工具/images_new/

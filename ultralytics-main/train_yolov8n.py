@@ -24,14 +24,14 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--model", type=str, default="yolov8n.pt", help="Model checkpoint or yaml.")
     parser.add_argument("--epochs", type=int, default=20, help="Training epochs.")
     parser.add_argument("--imgsz", type=int, default=640, help="Input image size.")
-    parser.add_argument("--batch", type=int, default=16, help="Batch size.")
+    parser.add_argument("--batch", type=int, default=24, help="Batch size.")
     parser.add_argument("--device", type=str, default="0", help="CUDA device, e.g. 0 or 0,1. Use cpu for CPU.")
     parser.add_argument("--workers", type=int, default=0, # 8, 
                         help="Dataloader workers.")
     parser.add_argument("--freeze", type=int, default=0, help="Freeze first N layers. 0 means train all layers.")
     parser.add_argument("--patience", type=int, default=30, help="Early stopping patience.")
     parser.add_argument("--project", type=Path, default=root / "runs" / "detect", help="Output project dir.")
-    parser.add_argument("--name", type=str, default="yolov8n_full", help="Run name.")
+    parser.add_argument("--name", type=str, default="yolov8n_full_new", help="Run name.")
     parser.add_argument("--seed", type=int, default=42, help="Random seed.")
     parser.add_argument("--cache", action="store_true", help="Cache images to speed up training.")
     parser.add_argument("--close-mosaic", type=int, default=10, help="Disable mosaic augmentation in last N epochs.")
@@ -66,8 +66,13 @@ def main() -> None:
 
 
     model = YOLO(args.model)
+    print("Model loaded. Starting training...")
+    print("Note: First run will take 5-10 minutes to process 175k images")
+    # Avoid start-of-training integration hooks that can crash silently on Windows/CUDA.
+    model.clear_callback("on_train_start")
+    # FIX: Windows中文路径BUG - 必须用绝对路径并强制转换
     model.train(
-        data=str(data_yaml),
+        data=str(data_yaml.absolute()),
         epochs=args.epochs,
         imgsz=args.imgsz,
         batch=args.batch,
@@ -75,13 +80,14 @@ def main() -> None:
         workers=args.workers,
         freeze=args.freeze,
         patience=args.patience,
-        project=str(project_dir),
+        project=str(project_dir.absolute()),
         name=args.name,
         seed=args.seed,
-        cache=args.cache,
+        cache='disk',
         close_mosaic=args.close_mosaic,
         pretrained=True,
-        verbose=True,
+        plots=False,
+        exist_ok=True,  # 修复路径重复拼接BUG
     )
 
 

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import gc
 import inspect
 import json
 import sys
@@ -10,6 +11,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import cv2
 import numpy as np
+import torch
 
 try:
     from tqdm import tqdm
@@ -149,7 +151,12 @@ class GroundingDinoOpenSetDetector:
         self.Image = Image
         try:
             self.processor = AutoProcessor.from_pretrained(model_id)
-            self.model = AutoModelForZeroShotObjectDetection.from_pretrained(model_id)
+            self.model = AutoModelForZeroShotObjectDetection.from_pretrained(
+                model_id,
+                low_cpu_mem_usage=True,
+                dtype=torch.float32,
+                use_safetensors=True,
+            )
         except Exception as exc:
             raise RuntimeError(
                 f"Failed to load Grounding DINO model '{model_id}'.\n"
@@ -187,6 +194,9 @@ class GroundingDinoOpenSetDetector:
         for key, value in list(inputs.items()):
             if hasattr(value, "to"):
                 inputs[key] = value.to(self.device)
+                # 匹配模型dtype类型修复float/Half类型不匹配错误 - 只转换浮点张量，不转换整型索引
+                if self.model.dtype is not None and hasattr(inputs[key], "to") and torch.is_floating_point(inputs[key]):
+                    inputs[key] = inputs[key].to(self.model.dtype)
 
         with self.torch.no_grad():
             outputs = self.model(**inputs)
@@ -617,6 +627,10 @@ def run_single_video(
                 max_per_class=int(args.max_per_class),
             )
 
+        gc.collect()
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
+
         bt_results = build_bytetrack_results(det_candidates, class_to_id)
         tracks_np = tracker.update(bt_results, frame)
         frame_boxes = tracks_to_frame_boxes(tracks_np, class_names, image_w, image_h)
@@ -765,15 +779,103 @@ def build_parser() -> argparse.ArgumentParser:
         "--video",
         nargs="+",
         default=[
-            # "医疗废物—感染性废物waste/video/1.mp4",
-            #      "医疗废物—感染性废物waste/video/2.mp4",
-                 "一次性医疗用品—2ml注射器syringe/video/1.mp4",
-                 "一次性医疗用品—2ml注射器syringe/video/2.mp4",
-                 "一次性医疗用品—2ml注射器syringe/video/3.mp4",
-                #  "医疗废物—感染性废物waste/video/6.mp4",
-                #  "医疗废物—感染性废物waste/video/7.mp4",
-                #  "医疗废物—感染性废物waste/video/8.mp4"
-                 ],
+            # "dataset_new/collected_videos/video_0059.mp4",
+            # "dataset_new/collected_videos/video_0121.mp4",
+            # "dataset_new/collected_videos/video_0174.mp4",
+            # "dataset_new/collected_videos/video_0280.mp4",
+            # "dataset_new/collected_videos/video_0281.mp4",
+            # "dataset_new/collected_videos/video_0282.mp4",
+            # "dataset_new/collected_videos/video_0329.mp4",
+            # "dataset_new/collected_videos/video_0374.mp4",
+            # "dataset_new/collected_videos/video_0435.mp4",
+            # "dataset_new/collected_videos/video_0466.mp4",
+            # "dataset_new/collected_videos/video_0513.mp4",
+            # "dataset_new/collected_videos/video_0561.mp4",
+            # "dataset_new/collected_videos/video_0562.mp4",
+            # "dataset_new/collected_videos/video_0611.mp4",
+            # "dataset_new/collected_videos/video_0630.mp4",
+            # "dataset_new/collected_videos/video_0719.mp4",
+            # "dataset_new/collected_videos/video_0720.mp4",
+            # "dataset_new/collected_videos/video_0782.mp4",
+            # "dataset_new/collected_videos/video_0813.mp4",
+            # "dataset_new/collected_videos/video_0855.mp4",
+            # "dataset_new/collected_videos/video_0918.mp4",
+            # "dataset_new/collected_videos/video_0969.mp4",
+            # "dataset_new/collected_videos/video_1022.mp4",
+            # "dataset_new/collected_videos/video_1080.mp4",
+            # "dataset_new/collected_videos/video_1126.mp4",
+            # "dataset_new/collected_videos/video_1150.mp4",
+            # "dataset_new/collected_videos/video_1186.mp4",
+            # "dataset_new/collected_videos/video_1242.mp4",
+            # "dataset_new/collected_videos/video_1293.mp4",
+            # "dataset_new/collected_videos/video_1326.mp4",
+            # "dataset_new/collected_videos/video_1401.mp4",
+            # "dataset_new/collected_videos/video_1453.mp4",
+            # "dataset_new/collected_videos/video_1515.mp4",
+            # "dataset_new/collected_videos/video_1516.mp4",
+            # "dataset_new/collected_videos/video_1561.mp4",
+            # "dataset_new/collected_videos/video_1598.mp4",
+            # "dataset_new/collected_videos/video_1663.mp4",
+            # "dataset_new/collected_videos/video_1664.mp4",
+            # "dataset_new/collected_videos/video_1747.mp4",
+            # "dataset_new/collected_videos/video_1803.mp4",
+            # "dataset_new/collected_videos/video_1804.mp4",
+            # "dataset_new/collected_videos/video_1828.mp4",
+            # "dataset_new/collected_videos/video_1913.mp4",
+            # "dataset_new/collected_videos/video_1914.mp4",
+            # "dataset_new/collected_videos/video_1958.mp4",
+            # "dataset_new/collected_videos/video_2030.mp4",
+            # "dataset_new/collected_videos/video_2031.mp4",
+            # "dataset_new/collected_videos/video_2091.mp4",
+            # "dataset_new/collected_videos/video_2153.mp4",
+            # "dataset_new/collected_videos/video_2226.mp4",
+            # "dataset_new/collected_videos/video_2264.mp4",
+            # "dataset_new/collected_videos/video_2265.mp4",
+            # "dataset_new/collected_videos/video_2266.mp4",
+            # "dataset_new/collected_videos/video_2345.mp4",
+            # "dataset_new/collected_videos/video_2391.mp4",
+            # "dataset_new/collected_videos/video_2434.mp4",
+            "dataset_new/collected_videos/video_2499.mp4",
+            "dataset_new/collected_videos/video_2577.mp4",
+            "dataset_new/collected_videos/video_2633.mp4",
+            "dataset_new/collected_videos/video_2689.mp4",
+            "dataset_new/collected_videos/video_2746.mp4",
+            "dataset_new/collected_videos/video_2789.mp4",
+            "dataset_new/collected_videos/video_2819.mp4",
+            "dataset_new/collected_videos/video_2820.mp4",
+            "dataset_new/collected_videos/video_2870.mp4",
+            "dataset_new/collected_videos/video_2919.mp4",
+            "dataset_new/collected_videos/video_2945.mp4",
+            "dataset_new/collected_videos/video_3005.mp4",
+            "dataset_new/collected_videos/video_3065.mp4",
+            "dataset_new/collected_videos/video_3101.mp4",
+            "dataset_new/collected_videos/video_3161.mp4",
+            "dataset_new/collected_videos/video_3219.mp4",
+            "dataset_new/collected_videos/video_3271.mp4",
+            "dataset_new/collected_videos/video_3320.mp4",
+            "dataset_new/collected_videos/video_3381.mp4",
+            "dataset_new/collected_videos/video_3423.mp4",
+            "dataset_new/collected_videos/video_3470.mp4",
+            "dataset_new/collected_videos/video_3525.mp4",
+            "dataset_new/collected_videos/video_3577.mp4",
+            "dataset_new/collected_videos/video_3623.mp4",
+            "dataset_new/collected_videos/video_3682.mp4",
+            "dataset_new/collected_videos/video_3727.mp4",
+            "dataset_new/collected_videos/video_3772.mp4",
+            "dataset_new/collected_videos/video_3815.mp4",
+            "dataset_new/collected_videos/video_3862.mp4",
+            "dataset_new/collected_videos/video_3910.mp4",
+            "dataset_new/collected_videos/video_3972.mp4",
+            "dataset_new/collected_videos/video_4021.mp4",
+            "dataset_new/collected_videos/video_4073.mp4",
+            "dataset_new/collected_videos/video_4123.mp4",
+            "dataset_new/collected_videos/video_4162.mp4",
+            "dataset_new/collected_videos/video_4215.mp4",
+            "dataset_new/collected_videos/video_4261.mp4",
+            "dataset_new/collected_videos/video_4315.mp4",
+            "dataset_new/collected_videos/video_4372.mp4",
+            "dataset_new/collected_videos/video_4430.mp4",
+        ],
         help=(
             "Input one or multiple videos, supports space or comma separator. "
             "Example: --video a.mp4 b.mp4 or --video a.mp4,b.mp4"
@@ -781,7 +883,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--output-dir",
-        default="一次性医疗用品—2ml注射器syringe/video/",
+        default="dataset_new/annotated_videos",
         help="Output root directory (per-video subfolders in batch mode).",
     )
     parser.add_argument(
@@ -791,7 +893,8 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--classes",
-        default="syringe, a white paper with red text",
+        # default="syringe, a white paper with red text",
+        default="medical device",
         help="Comma-separated class names, e.g. road_crack,baozi",
     )
     parser.add_argument("--model-id", default="IDEA-Research/grounding-dino-base")
